@@ -1,0 +1,52 @@
+const ss = SpreadsheetApp.getActiveSpreadsheet();
+const token = 'telegram_bot_token';
+ 
+
+function getSheetById(id) { 
+  return SpreadsheetApp.getActive().getSheets().filter(
+    function (s) { return s.getSheetId() === id; }
+  )[0];
+}
+
+const clients = getSheetById(sheet_it_in_url)
+
+
+
+
+
+
+function sendTelegram() {
+  let lastRow = clients.getLastRow();
+  let name = clients.getRange(2, 2, clients.getLastRow() - 1).getValues();
+  let contact = clients.getRange(2, 3, clients.getLastRow() - 1).getValues();
+  let flatname = name.flat();
+  let flatcontact = contact.flat();
+  let data = clients.getRange(lastRow, 1,1,3).getDisplayValues()[0];
+  let text = `
+Новая запись на курс!
+Дата регистрации: ${data[0]}
+Имя: ${data[1]}
+Контакт: ${data[2]}
+  `
+  //console.log(data)
+  
+  let chatId = "chat_id_from_telegram"
+ 
+  
+  sendText(chatId, text)
+}
+// отправка в телеграмм после заполнения формы (end)
+ 
+function sendText(chatId, text) {
+  let data = {
+    method: 'sendMessage',
+    chat_id: String(chatId),
+    text: text,
+    parse_mode: 'HTML'
+  };
+  let options = {
+    method: 'post',
+    payload: data
+  };
+  UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/', options)
+}
